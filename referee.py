@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import time
 
 import ai_math
+import ai_monto_caro
 
 class SimpleAI0():
     def __init__(self):
@@ -22,10 +23,12 @@ class SimpleAI1():
             return 1
         return 0
 
-agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI()]
+ai_3 = ai_monto_caro.BlackJackAI()
+ai_3.LoadPolicy()
+agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3]
 
 def Evaluate(agent, env):
-    env.seed(0)
+    env.seed(5)
     state = env.reset()
 
     total_round = 100000
@@ -47,6 +50,6 @@ def Evaluate(agent, env):
 if __name__ == "__main__":
 
     env = gym.make('Blackjack-v0')
-    
+
     for ai in agents:
         Evaluate(ai, env)
