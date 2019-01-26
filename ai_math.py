@@ -1,11 +1,7 @@
-#
-import gym
-import pandas as pd
-import matplotlib.pyplot as plt
-import time
-
 class BlackJackAI():
     def __init__(self):
+        self.dealer_card = -1
+        self.name = 'AI_MATH'
         self.prob = [[0 for i in range(0,23)] for i in range(0, 23)]
         self.card_prob = [ 1 for i in range(11) ]
         self.card_prob[10] = 4
@@ -34,7 +30,10 @@ class BlackJackAI():
             for x in range(1, 23):
                 self.prob_percent[n][x] = self.prob[n][x] / float(tmp)
 
-    def dealer_card(self, a):
+    def update_dealer_card(self, a):
+        if a == self.dealer_card:
+            return
+        self.dealer_card = a
         final_prob = [0] * 31
         for i in range(17, 31):
             final_prob[i] = self.count[i - a]
@@ -75,39 +74,13 @@ class BlackJackAI():
             win_rate = max(win_rate,self.hit_win_step(n, i))
         return win_rate
 
-    def action(self, n):
-        # print(n)
-        return n < 12
-        if self.stand_win(n) < self.hit_win(n):
+    def action(self, state):
+        self.update_dealer_card(state[1])
+        n = state[0]
+        hit_win_rate = self.hit_win(n)
+        if state[2]:
+            hit_win_rate = max(hit_win_rate, self.hit_win(n - 10))
+        if self.stand_win(n) < hit_win_rate:
             return 1
         else:
             return 0
-
-if __name__ == "__main__":
-    ai = BlackJackAI()
-    
-    ai.dealer_card(8)
-    print("11 stand", ai.stand_win(11))
-    print("11 hit", ai.hit_win(11))
-
-    env = gym.make('Blackjack-v0')
-    env.seed(1)
-    state = env.reset()
-    ai.dealer_card(state[1])
-
-    total_round = 100000
-    nround = 0
-    win_num = 0
-    while nround < total_round:
-        next_state, payout, done, _ = env.step(ai.action(state[0]))
-        state = next_state
-        if done:
-            nround += 1
-            if payout > 0:
-                win_num += 1
-            state = env.reset()
-            ai.dealer_card(state[1])        
-
-    print("total games: ", total_round)
-    print("win games: ", win_num)
-    print("win rate: ", float(win_num) / total_round * 100, "%")
