@@ -1,6 +1,7 @@
 #
 
 import gym
+import math
 import numpy as np
 
 show_step = 1000
@@ -22,6 +23,7 @@ class BlackJackAI(object):
         super(BlackJackAI, self).__init__()
         self.name = 'MontoCaro-AI'
         self.state_act_pair = {}
+        self.state_visit_cnt = {}
         self.policy = {}
 
 
@@ -29,13 +31,25 @@ class BlackJackAI(object):
         self.state_act_pair = {}
         for i in range(1, 22):
             for j in range(1, 12):
-                self.state_act_pair[_str((i, j, 1), 0)] = [0, 0]
-                self.state_act_pair[_str((i, j, 1), 1)] = [0, 0]
-                self.state_act_pair[_str((i, j, 0), 0)] = [0, 0]
-                self.state_act_pair[_str((i, j, 0), 1)] = [0, 0]
+                self.state_visit_cnt[_str((i, j, 1))] = 0
+                self.state_visit_cnt[_str((i, j, 0))] = 0
+                self.state_act_pair[_str((i, j, 1), 0)] = [0, 0, 0.0]
+                self.state_act_pair[_str((i, j, 1), 1)] = [0, 0, 0.0]
+                self.state_act_pair[_str((i, j, 0), 0)] = [0, 0, 0.0]
+                self.state_act_pair[_str((i, j, 0), 1)] = [0, 0, 0.0]
+
+    def UBC(self, state, act):
+        N_s = self.state_visit_cnt[_str(state)]
+        N_s_a, Q_s_a = self.state_act_pair[_str(state, act)][1:3]
+        ubc = Q_s_a + math.sqrt(math.log(1+N_s) / (1 + N_s_a))
+        return ubc
 
     def GetAction(self, state):
-        return np.random.randint(0, 2)
+        if self.UBC(state, 1) > self.UBC(state, 0):
+            return 1
+        else:
+            return 0
+        # return np.random.randint(0, 2)
 
     def Learn(self):
         self._ResetTable()
@@ -47,16 +61,20 @@ class BlackJackAI(object):
         total_round = 5000000
         track = []
         while nround < total_round:
-            act = self.GetAction(state)
-            track.append(_str(state, act))
+            act = self.GetAction(state)            
+            track.append((_str(state), _str(state, act)))
             next_state, payout, done, _ = env.step(act)
             state = next_state
             if done:
                 if payout > 0:
-                    for p in track:
+                    for s,p in track:
                         self.state_act_pair[p][0] += 1
-                for p in track:
+                for s,p in track:
                     self.state_act_pair[p][1] += 1
+                    self.state_act_pair[p][2] =  \
+                        float(self.state_act_pair[p][0]) \
+                        / float(self.state_act_pair[p][1])
+                    self.state_visit_cnt[s] += 1
                 nround += 1
                 if nround % show_step == 0:
                     print(nround, total_round, nround/float(total_round)*100, '%')

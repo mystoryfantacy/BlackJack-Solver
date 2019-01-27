@@ -28,7 +28,7 @@ ai_3.LoadPolicy()
 agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3]
 
 def Evaluate(agent, env):
-    env.seed(5)
+    env.seed(0)
     state = env.reset()
 
     total_round = 100000
