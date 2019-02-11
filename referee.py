@@ -13,6 +13,8 @@ class SimpleAI0():
     def action(self, state):
         if state[0] < 13:
             return 1
+        elif state[0] < 20 and state[2]:
+            return 1
         return 0
 
 class SimpleAI1():
@@ -41,7 +43,7 @@ def Evaluate(agent, env):
             nround += 1
             if payout > 0:
                 win_num += 1
-            state = env.reset()       
+            state = env.reset()
     print("Agent: ", agent.name)
     print("  total games: ", total_round)
     print("  win games: ", win_num)
