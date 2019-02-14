@@ -29,7 +29,7 @@ data = []
 labels = []
 
 for i in range(len(samples)):
-    if samples[i].hit_num + samples[i].stand_num >= 100:
+    if samples[i].hit_num + samples[i].stand_num < 100:
         continue
     a, b, c = samples[i].state
     data.append([a, b, c])
@@ -39,18 +39,27 @@ for i in range(len(samples)):
 
 print('Training Data Size:', len(data))
 
+print(labels)
+
 model.fit(np.array(data), np.array(labels), epochs=10, batch_size=16)
 
 test_data = np.array(data)
 print('ndim = ', test_data[0:3].ndim, test_data[0:3].shape)
+print('ndim = ', test_data[0:1], test_data[0:1].ndim, test_data[0:1].shape)
 print('ndim = ', test_data[0:1].ndim, test_data[0:1].transpose().shape)
 
-model.predict(test_data[0:1].transpose())
+def act(a):
+    if a[0] > a[1]:
+        return 0
+    else:
+        return 1
+model.predict(test_data[0:1])
 num_right = 0
 for i,s in enumerate(data):
-    ss = np.array(s)
-    a = model.predict(ss.transpose())
-    if a == labels[i]:
+    ss = np.array([s])
+    a = model.predict(ss)
+    print(s, a[0], act(a[0]))
+    if act(a[0]) == act(labels[i]):
         num_right += 1
 
 print(num_right, '/', len(data))
