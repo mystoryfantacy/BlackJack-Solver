@@ -1,6 +1,7 @@
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout, Flatten
+from generate_dataset import *
 
 # as first layer in a sequential model:
 model = Sequential()
@@ -20,6 +21,37 @@ model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-model.fit(data, labels, epochs=10, batch_size=32)
+import numpy as np
+# data = np.random.random((1000, 100))
+# labels = np.random.randint(2, size=(1000, 1))
 
+data = []
+labels = []
+
+for i in range(len(samples)):
+    if samples[i].hit_num + samples[i].stand_num >= 100:
+        continue
+    a, b, c = samples[i].state
+    data.append([a, b, c])
+    t = [0, 0]
+    t[samples[i].action] = 1
+    labels.append(t)
+
+print('Training Data Size:', len(data))
+
+model.fit(np.array(data), np.array(labels), epochs=10, batch_size=16)
+
+test_data = np.array(data)
+print('ndim = ', test_data[0:3].ndim, test_data[0:3].shape)
+print('ndim = ', test_data[0:1].ndim, test_data[0:1].transpose().shape)
+
+model.predict(test_data[0:1].transpose())
+num_right = 0
+for i,s in enumerate(data):
+    ss = np.array(s)
+    a = model.predict(ss.transpose())
+    if a == labels[i]:
+        num_right += 1
+
+print(num_right, '/', len(data))
 

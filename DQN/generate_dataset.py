@@ -17,6 +17,7 @@ class Units:
         s += ' ' + str(self.stand_win_num)
         return s
 
+# samples: player, dealer, use_ace, action, n_stand, n_stand_win, n_hit, n_hit_win
 samples = []
 with open('../BlackJackPolicy.txt', 'r') as f:
     for l in f.readlines():
