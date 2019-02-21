@@ -64,3 +64,5 @@ for i,s in enumerate(data):
 
 print(num_right, '/', len(data))
 
+model.save('BlackJack_keras.h5')
+

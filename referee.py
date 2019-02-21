@@ -6,6 +6,7 @@ import time
 
 import ai_math
 import ai_monto_caro
+import ai_dqn
 
 class SimpleAI0():
     def __init__(self):
@@ -27,7 +28,7 @@ class SimpleAI1():
 
 ai_3 = ai_monto_caro.BlackJackAI()
 ai_3.LoadPolicy()
-agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3]
+agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3, ai_dqn.BlackJackAI()]
 
 def Evaluate(agent, env):
     env.seed(0)
