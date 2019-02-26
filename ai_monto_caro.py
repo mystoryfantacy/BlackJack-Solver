@@ -61,7 +61,7 @@ class BlackJackAI(object):
         total_round = 5000000
         track = []
         while nround < total_round:
-            act = self.GetAction(state)            
+            act = self.GetAction(state)
             track.append((_str(state), _str(state, act)))
             next_state, payout, done, _ = env.step(act)
             state = next_state
@@ -83,19 +83,19 @@ class BlackJackAI(object):
                     env.seed(np.random.randint(0,11))
                 track = []
         self._MakePolicy()
-    
+
     def _StateActPairStr(self, state):
         def view_res(state, act):
             s = _str(state, act)
             w0 = self.state_act_pair[s][0]
             t0 = self.state_act_pair[s][1]
             return str(w0)+ '/'+ str(t0) + '['+str(w0/(float(t0)+0.0001)) + ']'
-        return view_res(state, 0) + ' '  + view_res(state, 1) 
+        return view_res(state, 0) + ' '  + view_res(state, 1)
 
     def _MakePolicy(self):
         def _rate(i, j, k, a):
             s = _str((i, j, k), a)
-            p = float(self.state_act_pair[s][0]) / (float(self.state_act_pair[s][0]) + 0.0001)
+            p = self.state_act_pair[s][2]
             return p
 
         def _act(i, j, k):
@@ -111,12 +111,12 @@ class BlackJackAI(object):
             for j in range(1, 12):
                 for k in range(0, 2):
                     self.policy[_str((i, j, k))] = (_act(i, j, k), (i, j, k))
-        
+
     def SavePolicy(self):
         with open('BlackJackPolicy.txt', 'w') as f:
             for s,a in self.policy.items():
                 f.write(s + ' ' + str(a[0]) + ' ' + self._StateActPairStr(a[1]) + '\n')
-    
+
     def LoadPolicy(self):
         self.policy = {}
         with open('BlackJackPolicy.txt', 'r') as f:
@@ -126,7 +126,7 @@ class BlackJackAI(object):
                 self.policy[s] = int(a)
 
     def PrintPolicy(self):
-        print(self.policy)  
+        print(self.policy)
 
     def action(self, state):
         a = self.policy[_str(state)]

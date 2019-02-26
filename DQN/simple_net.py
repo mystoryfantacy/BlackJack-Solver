@@ -56,7 +56,8 @@ print('Training Data Size:', len(data))
 
 print(labels)
 
-model.fit(data, labels, epochs=200, batch_size=16)
+early_stop_callback = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.001, patience=100, verbose=0, mode='max', baseline=None, restore_best_weights=True)
+model.fit(data, labels, epochs=500, batch_size=32, callbacks=[early_stop_callback])
 
 #model.fit(data, labels, epochs=50, batch_size=16)
 
