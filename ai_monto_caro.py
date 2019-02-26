@@ -4,7 +4,7 @@ import gym
 import math
 import numpy as np
 
-show_step = 1000
+show_step = 100000
 
 def _str(s, a = None):
     i, j, k = s
@@ -13,7 +13,7 @@ def _str(s, a = None):
     else:
         k = 0
     s = str(i) + '_' + str(j) + '_' + str(k)
-    if a:
+    if a != None:
         s += '_' + str(a)
     return s
 
