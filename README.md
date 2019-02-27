@@ -52,8 +52,9 @@ Because the simplicity of BlackJack and the state space is not very large, Monte
 in this game. A DNN trained with data sampled in Monte-Carlo algorithm can get the second best performance. And a simple
 empirical algorithm does well unexpectedly. It's possible to traverse all states exhaustedly and the analytic algorithm
  indeed did in this way. However the performance is a little upset maybe due to I mistook something. I also tried an algorithm
- combined Monte-Carlo and DNN training, it could get a not bad performance but couldn't competite with DNN directily trained
- with data from pure Monte-Carlo. I think it's because pure Monte-Carlo can collect all states and state-action value thanks to
- the small state space, but comination algorithm always missed some states.
+ combining Monte-Carlo and DNN training, it could get a not bad performance but couldn't compete with DNN directily trained
+ with data from a pure Monte-Carlo. I think it's because the pure Monte-Carlo can collect all state and state-action values
+ thanks to the small state space, but comination algorithm always missed some states.  
+
  Finally, it still needs more efforts to explain everything clearly but at least it shows how DNN and Monte-Carlo can be used
  to solve optimization problems.
