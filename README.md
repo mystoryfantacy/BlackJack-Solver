@@ -48,7 +48,7 @@ Agent:  AI_DQN [./DQN/BlackJack_MC_DQN_v0.h5]
 
 ```
 
-Because of the simplicity of BlackJack and the small state space, Monte-Carlo method can get best performance
+Because of the simplicity of BlackJack and the small state space, Monte-Carlo method can get the best performance
 in this game. A DNN trained with data sampled in Monte-Carlo algorithm can get the second best performance. And a simple
 empirical algorithm does well unexpectedly. It's possible to traverse all states exhaustedly and the analytic algorithm
  indeed did in this way. However the performance is a little upset maybe due to I mistook something. I also tried an algorithm
