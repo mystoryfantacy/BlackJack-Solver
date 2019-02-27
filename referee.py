@@ -28,10 +28,9 @@ class SimpleAI1():
 
 ai_3 = ai_monto_caro.BlackJackAI()
 ai_3.LoadPolicy()
-#agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3, ai_dqn.BlackJackAI()]
 dqn0 =ai_dqn.BlackJackAI()
 dqn1 =ai_dqn.BlackJackAI(model_name = './DQN/BlackJack_MC_DQN_v0.h5')
-agents = [dqn0, dqn1]
+agents = [SimpleAI0(), SimpleAI1(), ai_math.BlackJackAI(), ai_3, dqn0, dqn1]
 
 def Evaluate(agent, env):
     env.seed(0)

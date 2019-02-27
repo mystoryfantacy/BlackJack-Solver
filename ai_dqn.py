@@ -5,7 +5,7 @@ import numpy as np
 
 class BlackJackAI():
     def __init__(self, model_name = './DQN/BlackJack_keras_v0.h5', sample_action = False):
-        self.name = 'AI_DQN'
+        self.name = 'AI_DQN [' + model_name + ']'
         self.model = load_model(model_name)
         self._GetPolicy()
         self.sample_action = sample_action

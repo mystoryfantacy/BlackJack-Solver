@@ -50,6 +50,11 @@ class BlackJackAI(object):
         self.policy = {}
         self.factor = 0.05
 
+    def SetUBC(self):
+        self.sample_by_ubc = True
+
+    def ResetUBC(self):
+        self.sample_by_ubc = False
 
     def _ResetTable(self):
         self.state_act_pair = {}
@@ -66,15 +71,33 @@ class BlackJackAI(object):
         N_s = self.state_visit_cnt[_hash(state)]
         N_s_a, Q_s_a = self.state_act_pair[_hash(state, act)][1:3]
         ubc = Q_s_a + \
-              self.factor * self.policy[state][act] * \
               math.sqrt(math.log(1+N_s) / (1 + N_s_a))
         return ubc
 
     def _GetAction(self, state):
-        if self._UBC(state, 1) > self._UBC(state, 0):
-            return 1
+        if self.sample_by_ubc:
+          if self._UBC(state, 1) > self._UBC(state, 0):
+              return 1
+          else:
+              return 0
         else:
-            return 0
+          N_s = self.state_visit_cnt[_hash(state)]
+          N_0, Q_0 = self.state_act_pair[_hash(state, 0)][1:3]
+          N_1, Q_1 = self.state_act_pair[_hash(state, 1)][1:3]
+          log_Q0 = math.log(N_0 + 1) * Q_0
+          log_Q1 = math.log(N_1 + 1) * Q_1
+          delta_p = (log_Q0 - log_Q1) / float(log_Q0 + log_Q1 + 1e-5) * 1e-3
+          prob = self.policy[state]
+          prob[0] = min(max(0, prob[0] + delta_p), 1)
+          prob[1] = min(max(0, prob[1] - delta_p), 1)
+          ubc0 = prob[0] * \
+                 math.sqrt(math.log(1+N_s) / (1 + N_0))
+          ubc1 = prob[1] * \
+                 math.sqrt(math.log(1+N_s) / (1 + N_1))
+          return 0 if ubc0 >= ubc1 else 1
+          #act = np.random.choice(a=2, size=1, replace=True, p=prob)[0]
+          #return act
+
 
     def _MonteCarlo(self):
         self._ResetTable()
@@ -83,7 +106,7 @@ class BlackJackAI(object):
 
         state = env.reset()
         nround = 0
-        total_round = 10000
+        total_round = 50000
         track = []
         while nround < total_round:
             act = self._GetAction(state)
@@ -111,7 +134,7 @@ class BlackJackAI(object):
                 track = []
 
     def _CollectData(self):
-        sample_threshold = 1
+        sample_threshold = 100
 
         data = []
         label = []
@@ -180,5 +203,12 @@ class BlackJackAI(object):
 
 if __name__ == '__main__':
     ai = BlackJackAI()
-    ai.Train(100)
+    ai.SetUBC()
+    ai.Train(10)
+    input("Ending Warmup. Please input any key to continue")
+    ai.ResetUBC()
+    for i in range(3):
+        ai.Train(10)
+        print("End of iter ", i)
+        input("Please input any key to continue")
     ai.SavePolicy()
